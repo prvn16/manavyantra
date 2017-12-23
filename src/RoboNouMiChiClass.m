@@ -1079,6 +1079,9 @@ classdef RoboNouMiChiClass < RoboNouMiChiClassOc
         function sayHello(obj)
             disp('Hello');
         end
+        function sayHello1(obj)
+            disp('Hello');
+        end
   
     end
     
