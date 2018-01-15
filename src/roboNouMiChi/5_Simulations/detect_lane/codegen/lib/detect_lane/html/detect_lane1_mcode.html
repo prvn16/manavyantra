@@ -1,0 +1,159 @@
+<!-- saved from url=(0014)about:internet -->
+<html>
+<body>
+<script src="resources/eml_report_loadable_data.js"></script>
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,1" id="srcline1">  1</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,2" id="srcline2">  2</a></span><span class="line"><span class="keyword">function</span> [<span class="var type1" id="S2T1U3">laneFound</span>, <span class="var type1" id="S3T2U4">ltPts</span>, <span class="var type1" id="S4T2U5">rtPts</span>] = detect_lane(<span class="var type1" id="S5T3U8">frame</span>, <span class="var type1" id="S6T4U9">laneCoeffMeans</span>, <span class="var type1" id="S7T4U10">laneCoeffStds</span>) </span></span>
+<span class="srcline"><span class="lineno"><a href="1,3" id="srcline3">  3</a></span><span class="line"><span class="comment">% From the networks output, </span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,4" id="srcline4">  4</a></span><span class="line"><span class="comment">% compute left and right lane points in the image coordinates </span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,5" id="srcline5">  5</a></span><span class="line"><span class="comment">% The camera coordinates are described by the caltech mono camera model.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,6" id="srcline6">  6</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,7" id="srcline7">  7</a></span><span class="line"><span class="comment">%#codegen</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,8" id="srcline8">  8</a></span><span class="line"><span class="mxinfo " id="T5:U7"><span class="var type1" id="S8T5U13">mm</span> = <span class="mxinfo " id="T5:U9"><span class="fcn" id="F2N2:B15">ManavYantra</span>(<span class="mxinfo " id="T6:U10">1</span>,<span class="mxinfo " id="T6:U11">2</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,9" id="srcline9">  9</a></span><span class="line"><span class="mxinfo " id="T6:U12"><span class="var type1" id="S10T6U20">yy</span> = <span class="mxinfo " id="T6:U14"><span class="var type1" id="S8T5U23">mm</span>.<span class="fcn" id="F3N3:B24">method1</span>(<span class="mxinfo " id="T6:U16">3</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,10" id="srcline10"> 10</a></span><span class="line"><span class="keyword">persistent</span> <span class="var type1" id="S11T7U27">lanenet</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,11" id="srcline11"> 11</a></span><span class="line"><span class="keyword">if</span> <span class="mxinfo " id="T1:U18">isempty(<span class="var type0" id="S11T0U32">lanenet</span>)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,12" id="srcline12"> 12</a></span><span class="line">    <span class="mxinfo " id="T7:U19"><span class="var type1" id="S11T7U35">lanenet</span> = <span class="mxinfo " id="T7:U21">coder.loadDeepLearningNetwork(<span class="string">'laneNet.mat'</span>, <span class="string">'lanenet'</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,13" id="srcline13"> 13</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,14" id="srcline14"> 14</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,15" id="srcline15"> 15</a></span><span class="line"><span class="mxinfo " id="T11:U22"><span class="var type1" id="S14T11U44">lanecoeffsNetworkOutput</span> = <span class="mxinfo " id="T11:U24"><span class="var type1" id="S11T7U47">lanenet</span>.predict(<span class="mxinfo " id="T3:U26">permute(<span class="var type1" id="S5T3U51">frame</span>, [2 1 3])</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,16" id="srcline16"> 16</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,17" id="srcline17"> 17</a></span><span class="line"><span class="comment">% Recover original coeffs by reversing the normalization steps</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,18" id="srcline18"> 18</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,19" id="srcline19"> 19</a></span><span class="line"><span class="mxinfo " id="T11:U28"><span class="var type1" id="S16T11U59">params</span> = <span class="mxinfo " id="T11:U30"><span class="mxinfo " id="T11:U31"><span class="var type1" id="S14T11U62">lanecoeffsNetworkOutput</span> .* <span class="var type1" id="S7T4U63">laneCoeffStds</span></span> + <span class="var type1" id="S6T4U64">laneCoeffMeans</span></span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,20" id="srcline20"> 20</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,21" id="srcline21"> 21</a></span><span class="line"><span class="mxinfo " id="T1:U35"><span class="var type1" id="S17T1U67">isRightLaneFound</span> = <span class="mxinfo " id="T1:U37"><span class="mxinfo " id="T12:U38">abs(<span class="mxinfo " id="T12:U39"><span class="var type1" id="S16T11U72">params</span>(<span class="mxinfo " id="T13:U41">6</span>)</span>)</span> &gt; <span class="mxinfo " id="T6:U42">0.5</span></span></span>; <span class="comment">%c should be more than 0.5 for it to be a right lane</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,22" id="srcline22"> 22</a></span><span class="line"><span class="mxinfo " id="T1:U43"><span class="var type1" id="S19T1U77">isLeftLaneFound</span> =  <span class="mxinfo " id="T1:U45"><span class="mxinfo " id="T12:U46">abs(<span class="mxinfo " id="T12:U47"><span class="var type1" id="S16T11U82">params</span>(<span class="mxinfo " id="T13:U49">3</span>)</span>)</span> &gt; <span class="mxinfo " id="T6:U50"><span class="mxinfo " id="T6:U51">0.5</span> + <span class="var type1" id="S10T6U86">yy</span></span></span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,23" id="srcline23"> 23</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,24" id="srcline24"> 24</a></span><span class="line"><span class="mxinfo " id="T14:U53"><span class="var type1" id="S20T14U89">vehicleXPoints</span> = <span class="mxinfo " id="T14:U55">3:30</span></span>; <span class="comment">%meters, ahead of the sensor</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,25" id="srcline25"> 25</a></span><span class="line"><span class="mxinfo " id="T2:U56"><span class="var type1" id="S3T2U95">ltPts</span> = coder.nullcopy(zeros(<span class="mxinfo " id="T6:U58">28</span>,<span class="mxinfo " id="T6:U59">2</span>,<span class="string">'single'</span>))</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,26" id="srcline26"> 26</a></span><span class="line"><span class="mxinfo " id="T2:U60"><span class="var type1" id="S4T2U107">rtPts</span> = coder.nullcopy(zeros(<span class="mxinfo " id="T6:U62">28</span>,<span class="mxinfo " id="T6:U63">2</span>,<span class="string">'single'</span>))</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,27" id="srcline27"> 27</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,28" id="srcline28"> 28</a></span><span class="line"><span class="keyword">if</span> <span class="var type1" id="S17T1U120">isRightLaneFound</span> &amp;&amp; <span class="var type1" id="S19T1U121">isLeftLaneFound</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,29" id="srcline29"> 29</a></span><span class="line">    <span class="mxinfo " id="T15:U66"><span class="var type1" id="S22T15U124">rtBoundary</span> = <span class="mxinfo " id="T15:U68"><span class="var type1" id="S16T11U126">params</span>(<span class="mxinfo " id="T16:U70">4:6</span>)</span></span>;		</span></span>
+<span class="srcline"><span class="lineno"><a href="1,30" id="srcline30"> 30</a></span><span class="line">	<span class="mxinfo " id="T17:U71"><span class="var type1" id="S23T17U132">rt_y</span> = <span class="mxinfo " id="T17:U73"><span class="fcn" id="F97N8:B134">computeBoundaryModel</span>(<span class="var type1" id="S22T15U135">rtBoundary</span>, <span class="var type1" id="S20T14U136">vehicleXPoints</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,31" id="srcline31"> 31</a></span><span class="line">	<span class="mxinfo " id="T15:U76"><span class="var type1" id="S25T15U139">ltBoundary</span> = <span class="mxinfo " id="T15:U78"><span class="var type1" id="S16T11U141">params</span>(<span class="mxinfo " id="T16:U80">1:3</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,32" id="srcline32"> 32</a></span><span class="line">	<span class="mxinfo " id="T17:U81"><span class="var type1" id="S26T17U147">lt_y</span> = <span class="mxinfo " id="T17:U83"><span class="fcn" id="F97N8:B149">computeBoundaryModel</span>(<span class="var type1" id="S25T15U150">ltBoundary</span>, <span class="var type1" id="S20T14U151">vehicleXPoints</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,33" id="srcline33"> 33</a></span><span class="line">	</span></span>
+<span class="srcline"><span class="lineno"><a href="1,34" id="srcline34"> 34</a></span><span class="line">	<span class="comment">% Visualize lane boundaries of the ego vehicle</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,35" id="srcline35"> 35</a></span><span class="line">    <span class="mxinfo " id="T18:U86"><span class="var type1" id="S27T18U154">tform</span> = <span class="mxinfo " id="T18:U88"><span class="fcn" id="F333N9:B156">get_tformToImage</span></span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,36" id="srcline36"> 36</a></span><span class="line">    <span class="comment">% map vehicle to image coordinates</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,37" id="srcline37"> 37</a></span><span class="line">    <span class="mxinfo " id="T2:U89"><span class="var type1" id="S3T2U159">ltPts</span> =  <span class="mxinfo " id="T2:U91"><span class="var type1" id="S27T18U162">tform</span>.transformPointsInverse(<span class="mxinfo " id="T2:U93">[<span class="mxinfo " id="T20:U94"><span class="var type1" id="S20T14U167">vehicleXPoints</span>'</span>, <span class="mxinfo " id="T20:U96"><span class="var type1" id="S26T17U169">lt_y</span>'</span>]</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,38" id="srcline38"> 38</a></span><span class="line">    <span class="mxinfo " id="T2:U98"><span class="var type1" id="S4T2U172">rtPts</span> =  <span class="mxinfo " id="T2:U100"><span class="var type1" id="S27T18U175">tform</span>.transformPointsInverse(<span class="mxinfo " id="T2:U102">[<span class="mxinfo " id="T20:U103"><span class="var type1" id="S20T14U180">vehicleXPoints</span>'</span>, <span class="mxinfo " id="T20:U105"><span class="var type1" id="S23T17U182">rt_y</span>'</span>]</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,39" id="srcline39"> 39</a></span><span class="line">	<span class="mxinfo " id="T1:U107"><span class="var type1" id="S2T1U185">laneFound</span> = <span class="mxinfo " id="T1:U109">true</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,40" id="srcline40"> 40</a></span><span class="line"><span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,41" id="srcline41"> 41</a></span><span class="line">	<span class="mxinfo " id="T1:U110"><span class="var type1" id="S2T1U191">laneFound</span> = <span class="mxinfo " id="T1:U112">false</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,42" id="srcline42"> 42</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,43" id="srcline43"> 43</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,44" id="srcline44"> 44</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,45" id="srcline45"> 45</a></span><span class="line"></span></span>
+</pre>
+<div class="dead">
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,46" id="srcline46"> 46</a></span><span class="line">function yWorld = computeBoundaryModel(model, xWorld)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,47" id="srcline47"> 47</a></span><span class="line">	yWorld = polyval(model, xWorld);	</span></span>
+<span class="srcline"><span class="lineno"><a href="1,48" id="srcline48"> 48</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,49" id="srcline49"> 49</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,50" id="srcline50"> 50</a></span><span class="line">function tform = get_tformToImage </span></span>
+<span class="srcline"><span class="lineno"><a href="1,51" id="srcline51"> 51</a></span><span class="line"><span class="comment">% Compute extrinsics based on camera setup</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,52" id="srcline52"> 52</a></span><span class="line">yaw = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,53" id="srcline53"> 53</a></span><span class="line">pitch = 14; <span class="comment">% pitch of the camera in degrees</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,54" id="srcline54"> 54</a></span><span class="line">roll = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,55" id="srcline55"> 55</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,56" id="srcline56"> 56</a></span><span class="line">translation = translationVector(yaw, pitch, roll);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,57" id="srcline57"> 57</a></span><span class="line">rotation    = rotationMatrix(yaw, pitch, roll);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,58" id="srcline58"> 58</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,59" id="srcline59"> 59</a></span><span class="line"><span class="comment">% Construct a camera matrix</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,60" id="srcline60"> 60</a></span><span class="line">focalLength    = [309.4362, 344.2161];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,61" id="srcline61"> 61</a></span><span class="line">principalPoint = [318.9034, 257.5352];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,62" id="srcline62"> 62</a></span><span class="line">Skew = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,63" id="srcline63"> 63</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,64" id="srcline64"> 64</a></span><span class="line">camMatrix = [rotation; translation] * intrinsicMatrix(focalLength, ...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,65" id="srcline65"> 65</a></span><span class="line">	Skew, principalPoint);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,66" id="srcline66"> 66</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,67" id="srcline67"> 67</a></span><span class="line"><span class="comment">% Turn camMatrix into 2-D homography</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,68" id="srcline68"> 68</a></span><span class="line">tform2D = [camMatrix(1,:); camMatrix(2,:); camMatrix(4,:)]; <span class="comment">% drop Z</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,69" id="srcline69"> 69</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,70" id="srcline70"> 70</a></span><span class="line">tform = projective2d(tform2D);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,71" id="srcline71"> 71</a></span><span class="line">tform = tform.invert();</span></span>
+<span class="srcline"><span class="lineno"><a href="1,72" id="srcline72"> 72</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,73" id="srcline73"> 73</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,74" id="srcline74"> 74</a></span><span class="line">function translation = translationVector(yaw, pitch, roll)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,75" id="srcline75"> 75</a></span><span class="line">SensorLocation = [0 0];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,76" id="srcline76"> 76</a></span><span class="line">Height = 2.1798;    <span class="comment">% mounting height in meters from the ground</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,77" id="srcline77"> 77</a></span><span class="line">rotationMatrix = (...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,78" id="srcline78"> 78</a></span><span class="line">	rotZ(yaw)*...<span class="comment"> <span class="comment">% last rotation</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,79" id="srcline79"> 79</a></span><span class="line">	rotX(90-pitch)*...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,80" id="srcline80"> 80</a></span><span class="line">	rotZ(roll)...<span class="comment"> <span class="comment">% first rotation</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,81" id="srcline81"> 81</a></span><span class="line">	);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,82" id="srcline82"> 82</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,83" id="srcline83"> 83</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,84" id="srcline84"> 84</a></span><span class="line"><span class="comment">% Adjust for the SensorLocation by adding a translation</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,85" id="srcline85"> 85</a></span><span class="line">sl = SensorLocation;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,86" id="srcline86"> 86</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,87" id="srcline87"> 87</a></span><span class="line">translationInWorldUnits = [sl(2), sl(1), Height];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,88" id="srcline88"> 88</a></span><span class="line">translation = translationInWorldUnits*rotationMatrix;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,89" id="srcline89"> 89</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,90" id="srcline90"> 90</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,91" id="srcline91"> 91</a></span><span class="line"><span class="comment">%------------------------------------------------------------------</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,92" id="srcline92"> 92</a></span><span class="line"><span class="comment">% Rotation around X-axis</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,93" id="srcline93"> 93</a></span><span class="line">function R = rotX(a)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,94" id="srcline94"> 94</a></span><span class="line">a = deg2rad(a);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,95" id="srcline95"> 95</a></span><span class="line">R = [...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,96" id="srcline96"> 96</a></span><span class="line">	1   0        0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,97" id="srcline97"> 97</a></span><span class="line">	0   cos(a)  -sin(a);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,98" id="srcline98"> 98</a></span><span class="line">	0   sin(a)   cos(a)];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,99" id="srcline99"> 99</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,100" id="srcline100">100</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,101" id="srcline101">101</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,102" id="srcline102">102</a></span><span class="line"><span class="comment">%------------------------------------------------------------------</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,103" id="srcline103">103</a></span><span class="line"><span class="comment">% Rotation around Y-axis</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,104" id="srcline104">104</a></span><span class="line">function R = rotY(a)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,105" id="srcline105">105</a></span><span class="line">a = deg2rad(a);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,106" id="srcline106">106</a></span><span class="line">R = [...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,107" id="srcline107">107</a></span><span class="line">	cos(a)  0 sin(a);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,108" id="srcline108">108</a></span><span class="line">	0       1 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,109" id="srcline109">109</a></span><span class="line">	-sin(a) 0 cos(a)];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,110" id="srcline110">110</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,111" id="srcline111">111</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,112" id="srcline112">112</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,113" id="srcline113">113</a></span><span class="line"><span class="comment">%------------------------------------------------------------------</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,114" id="srcline114">114</a></span><span class="line"><span class="comment">% Rotation around Z-axis</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,115" id="srcline115">115</a></span><span class="line">function R = rotZ(a)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,116" id="srcline116">116</a></span><span class="line">a = deg2rad(a);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,117" id="srcline117">117</a></span><span class="line">R = [...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,118" id="srcline118">118</a></span><span class="line">	cos(a) -sin(a) 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,119" id="srcline119">119</a></span><span class="line">	sin(a)  cos(a) 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,120" id="srcline120">120</a></span><span class="line">	0       0      1];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,121" id="srcline121">121</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,122" id="srcline122">122</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,123" id="srcline123">123</a></span><span class="line"><span class="comment">%------------------------------------------------------------------</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,124" id="srcline124">124</a></span><span class="line"><span class="comment">% Given the Yaw, Pitch and Roll, figure out appropriate Euler</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,125" id="srcline125">125</a></span><span class="line"><span class="comment">% angles and the sequence in which they are applied in order to</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,126" id="srcline126">126</a></span><span class="line"><span class="comment">% align the camera's coordinate system with the vehicle coordinate</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,127" id="srcline127">127</a></span><span class="line"><span class="comment">% system. The resulting matrix is a Rotation matrix that together</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,128" id="srcline128">128</a></span><span class="line"><span class="comment">% with Translation vector define the camera extrinsic parameters.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,129" id="srcline129">129</a></span><span class="line">function rotation = rotationMatrix(yaw, pitch, roll)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,130" id="srcline130">130</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,131" id="srcline131">131</a></span><span class="line">rotation = (...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,132" id="srcline132">132</a></span><span class="line">	rotY(180)*...<span class="comment">            <span class="comment">% last rotation: point Z up</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,133" id="srcline133">133</a></span><span class="line">	rotZ(-90)*...<span class="comment">            <span class="comment">% X-Y swap</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,134" id="srcline134">134</a></span><span class="line">	rotZ(yaw)*...<span class="comment">       <span class="comment">% point the camera forward</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,135" id="srcline135">135</a></span><span class="line">	rotX(90-pitch)*...<span class="comment">  <span class="comment">% "un-pitch"</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,136" id="srcline136">136</a></span><span class="line">	rotZ(roll)...<span class="comment">       <span class="comment">% 1st rotation: "un-roll"</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,137" id="srcline137">137</a></span><span class="line">	);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,138" id="srcline138">138</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,139" id="srcline139">139</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,140" id="srcline140">140</a></span><span class="line">function intrinsicMat = intrinsicMatrix(FocalLength, Skew, PrincipalPoint)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,141" id="srcline141">141</a></span><span class="line">intrinsicMat = ...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,142" id="srcline142">142</a></span><span class="line">	[FocalLength(1)  , 0                     , 0; ...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,143" id="srcline143">143</a></span><span class="line">	 Skew             , FocalLength(2)   , 0; ...</span></span>
+<span class="srcline"><span class="lineno"><a href="1,144" id="srcline144">144</a></span><span class="line">	 PrincipalPoint(1), PrincipalPoint(2), 1];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,145" id="srcline145">145</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="1,146" id="srcline146">146</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,147" id="srcline147">147</a></span><span class="line"> </span></span>
+</pre>
+</div>
+</body>
+</html>
