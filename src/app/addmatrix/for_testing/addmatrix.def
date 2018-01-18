@@ -1,0 +1,8 @@
+LIBRARY addmatrix
+EXPORTS
+addmatrixInitialize
+addmatrixInitializeWithHandlers
+addmatrixTerminate
+addmatrixPrintStackTrace
+mlxAddmatrix
+

@@ -1,0 +1,15 @@
+LIBRARY sobel_mex.mexw64
+EXPORTS
+mexFunction
+mexfilerequiredapiversion
+emlrtMexFcnProperties
+sobel
+emxEnsureCapacity_real_T
+emxEnsureCapacity_uint8_T
+emxFree_real_T
+emxFree_uint8_T
+emxInit_real_T
+emxInit_uint8_T
+sobel_initialize
+sobel_terminate
+sobel_atexit

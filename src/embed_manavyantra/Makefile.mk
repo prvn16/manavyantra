@@ -1,0 +1,2 @@
+all:	
+	env LD_LIBRARY_PATH='' nvcc -o codegen/lib/detect_lane/lanenet main_lanenet.cpp codegen/lib/detect_lane/detect_lane.a -I"codegen/lib/detect_lane" -I"$(NVIDIA_CUDNN)/include" -I"$(MATLAB_ROOT)/extern/include" -L"$(NVIDIA_CUDNN)/lib64" -lcudnn -lcublas -lcudart `pkg-config --cflags --libs opencv`

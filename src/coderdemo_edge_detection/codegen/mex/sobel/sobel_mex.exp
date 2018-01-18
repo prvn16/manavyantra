@@ -1,0 +1,14 @@
+sobel_mex.mexw64
+emlrtMexFcnProperties		emlrtMexFcnProperties
+emxEnsureCapacity_real_T		emxEnsureCapacity_real_T
+emxEnsureCapacity_uint8_T		emxEnsureCapacity_uint8_T
+emxFree_real_T		emxFree_real_T
+emxFree_uint8_T		emxFree_uint8_T
+emxInit_real_T		emxInit_real_T
+emxInit_uint8_T		emxInit_uint8_T
+mexFunction		mexFunction
+mexfilerequiredapiversion		mexfilerequiredapiversion
+sobel		sobel
+sobel_atexit		sobel_atexit
+sobel_initialize		sobel_initialize
+sobel_terminate		sobel_terminate

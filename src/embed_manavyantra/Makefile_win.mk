@@ -1,0 +1,2 @@
+all:	
+	nvcc -o "codegen/lib/detect_lane/lanenet.exe" main_lanenet.cpp -L"codegen/lib/detect_lane" detect_lane.lib -I"codegen/lib/detect_lane" -I"$(NVIDIA_CUDNN)\include" "$(NVIDIA_CUDNN)\lib\x64\cudnn.lib" -lcublas -lcudart -lcusolver  -I"$(OPENCV_DIR)\include" -L"$(OPENCV_DIR)\x64\vc12\lib" -lopencv_imgproc249 -lopencv_core249 -lopencv_highgui249 -lopencv_video249 
